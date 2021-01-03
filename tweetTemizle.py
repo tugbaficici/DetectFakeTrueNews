@@ -1,3 +1,16 @@
+#
+# Bu temizleme işlemleri doğru yanlış veri kümelerinin daha iyi ayrılması için kullanılmıştır
+#
+# Temizlemede aşağıda bulunan fonksiyonlar uygulanmıştır
+# 
+# 1-Linklerin temizlenmesi
+# 2-Noktalama işaretlerinin temizlenmesi
+# 3-Her harfin küçük harf yapılması
+# 4-Etkisiz kelimelerin(stopwords) kaldırılması
+# 5-Emojilerin kaldırılması
+#
+# Kullanılan veri setleri Haberler klasörü içerisinde yer almaktadır
+
 import csv
 import string
 import re
@@ -5,9 +18,11 @@ import re
 tweets = list()
 truetweets = list()
 
-with open('Haberler/truetweets.csv') as truetweet:
+#Her çekilen tweet için dosya yollu düzenlenmelidir
+#Konu ile alakalı anahtar kelimelere göre tweetler seçilmektedir
+with open('Haberler/tweetler.csv') as truetweet:
     tweets = truetweet.readlines()
-    keyword_list = ["corona", "coronavirus", "korona", "koronavirus", "covid-19", "kovid-19","sağlık bakanı"]
+    keyword_list = ["corona", "coronavirus", "korona", "koronavirüs", "covid-19", "kovid-19","sağlık bakanı","koronavirüs aşısı"]
 
     for i in tweets:
         for j in keyword_list:
@@ -16,7 +31,8 @@ with open('Haberler/truetweets.csv') as truetweet:
                 break
 
 
-#Haberlerde bulunan linklerin temizlenmesi
+#Seçilen tweetler içerisinde bulunan linklerin maksimum iki kere yazıldığı göz
+#önüne alındığından döngü iki kez tekrarlanmıştır
 linksiztweet1=list()
 linksiztweet=list()
 for tweet in truetweets:
@@ -42,7 +58,7 @@ for tweet in linksiztweet1:
 
 
 #Haberlerde bulunan kelimeler küçük harflere çevrilmesi
-#Noktalama işaretleri temizlenecek
+#Noktalama işaretleri temizlenmesi
 punctuation = ['(', ')', '?', ':', ';', ',', '.', '!', '/', '"', "'"]
 for i in range(len(linksiztweet)):
     linksiztweet[i]=linksiztweet[i].lower()
@@ -55,6 +71,7 @@ for i in range(len(linksiztweet)):
 
 
 #Stop words(etkisiz kelimeler) haberlerin içinden çıkartılacak
+#Etkisiz kelimelerin listesi Google'un Türkçe için kullandığı kelimelerden oluşmaktadır
 turkçeStopWords=['acaba','ama','artık','asla','aslında','az','ancak',
             'bana','bazen','bazı','bazıları', 'bazısı', 'belki', 'ben', 'beni','benim', 'beş',
             'bile', 'bir', 'birçoğu', 'birçok', 'birçokları','biri', 'birisi', 'birkaç', 'birkaçı',
@@ -89,6 +106,7 @@ for i in range(len(linksiztweet)):
             yenitweet += j+" "
     linksiztweet[i]=yenitweet
 
+
 #Tweetlerde bulunan emojilerin temizlenmesi
 regrex_pattern = re.compile(pattern = "["
         u"\U0001F600-\U0001F64F"  # Genel emoji seti
@@ -105,8 +123,8 @@ for i in range(len(linksiztweet)):
     linksiztweet[i]=regrex_pattern.sub(r'',linksiztweet[i])
 
 
-
-with open('Haberler/truetweetssecilen.csv','w') as temizveri:
+#Temizlenen tweetlerin ayrılmak için farklı bir dosyaya yazılması
+with open('Haberler/truetweetsall2.csv','w') as temizveri:
     for i in range(len(linksiztweet)):
         temizveri.write(linksiztweet[i])
     
